@@ -16,10 +16,13 @@ const crearToken = (user, secret, expiresIn) => {
 // Resolvers
 const resolvers = {
     Query: {
+        // Usuarios
         obtenerUsuario: async (_, { token }) => {
             const usuarioId = await jwt.verify(token, process.env.JWT_SECRET);
             return usuarioId;
         },
+
+        // Productos
         obtenerProductos: async () => {
             try {
                 const productos = await Producto.find({});
@@ -37,6 +40,41 @@ const resolvers = {
                 console.error(error);
             }
         },
+
+        // Clientes
+        obtenerClientes: async () => {
+            try {
+                const clientes = await Cliente.find({});
+                return clientes;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        obtenerClientesVendedor: async (_, {}, ctx) => {
+            try {
+                const clientes = await Cliente.find({ vendedor: ctx.usuario.id.toString() });
+                return clientes;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        obtenerCliente: async (_, {id}, ctx) => {
+            try {
+                // Revisar que el cliente exista
+                const cliente = await Cliente.findById(id);
+                if (!cliente) throw new Error('Cliente no encontrado');
+
+                // Solo el vendedor que lo creo puede ver el detalle del cliente
+                if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                    throw new Error('No autorizado');
+                }
+
+                return cliente;
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
     },
     Mutation: {
         // Usuarios
@@ -108,7 +146,9 @@ const resolvers = {
         },
 
         // Clientes
-        nuevoCliente: async (_, {input}) => {
+        nuevoCliente: async (_, {input}, ctx) => {
+
+            console.log(ctx);
 
             const { email } = input;
            
@@ -119,7 +159,7 @@ const resolvers = {
             const nuevoCliente = new Cliente(input);
 
             // Asignar el vendedor
-            nuevoCliente.vendedor = '60c632d081ba96676e9cfc22';
+            nuevoCliente.vendedor = ctx.usuario.id;
 
             // Guardar en BD
             try {
@@ -129,6 +169,34 @@ const resolvers = {
                 console.error(error);
             }
 
+        },
+        actualizarCliente: async (_, {id, input}, ctx) => {
+            // Verificar que exista el cliente
+            let cliente = await Cliente.findById(id);
+            if(!cliente) throw new Error('El cliente no existe');
+
+            // Solo el vendedor que creo el cliente puede editarlo
+            if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                throw new Error('No autorizado');
+            }
+
+            // Grabar en BD
+            cliente = await Cliente.findOneAndUpdate({_id: id}, input, {new: true});
+            return cliente;
+        },
+        eliminarCliente: async (_, {id}, ctx) => {
+            // Verificar que exista el cliente
+            let cliente = await Cliente.findById(id);
+            if(!cliente) throw new Error('El cliente no existe');
+
+            // Solo el vendedor que creo el cliente puede editarlo
+            if (cliente.vendedor.toString() !== ctx.usuario.id) {
+                throw new Error('No autorizado');
+            }
+
+            await Cliente.findOneAndDelete({_id: id});
+
+            return cliente;
         }
     }
 }
