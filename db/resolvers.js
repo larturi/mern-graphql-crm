@@ -107,6 +107,66 @@ const resolvers = {
             // Returnar el pedido
             return pedido;
         },
+        obtenerPedidosEstado: async (_, {estado}, ctx) => {
+            const pedidos = await Pedido.find({ vendedor: ctx.usuario.id, estado });
+            return pedidos;
+        },
+
+        // Busquedas Avanzadas
+        mejoresClientes: async () => {
+            const clientes = await Pedido.aggregate([
+                { $match: { estado: 'COMPLETADO' } },
+                { $group: {
+                    _id: '$cliente',
+                    total: { $sum: '$total' }
+                }},
+                {
+                    $lookup: {
+                        from: 'clientes',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'cliente'
+                    }
+                },
+                {
+                    $limit: 3
+                },
+                {
+                    $sort: { total: -1 }
+                }
+            ]);
+
+            return clientes;
+        },
+        mejoresVendedores: async () => {
+            const vendedores = await Pedido.aggregate([
+                { $match: { estado: 'COMPLETADO' } },
+                { $group: {
+                    _id: '$vendedor',
+                    total: { $sum: '$total' }
+                }},
+                {
+                    $lookup: {
+                        from: 'usuarios',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'vendedor'
+                    }
+                },
+                {
+                    $limit: 3
+                },
+                {
+                    $sort: { total: -1 }
+                }
+            ]);
+
+            return vendedores;
+        },
+        buscarProducto: async (_, {texto}) => {
+            const productos = await Producto.find({ $text: { $search: texto } });
+            return productos;
+        },
     },
     Mutation: {
         // Usuarios
@@ -219,7 +279,7 @@ const resolvers = {
             let cliente = await Cliente.findById(id);
             if(!cliente) throw new Error('El cliente no existe');
 
-            // Solo el vendedor que creo el cliente puede editarlo
+            // Solo el vendedor que creo el cliente puede borrarlo
             if (cliente.vendedor.toString() !== ctx.usuario.id) {
                 throw new Error('No autorizado');
             }
@@ -310,6 +370,20 @@ const resolvers = {
             // Grabar en BD
             const resultado = await Pedido.findOneAndUpdate({_id: id}, input, {new: true});
             return resultado;
+        },
+        eliminarPedido: async (_, {id}, ctx) => {
+            // Verificar que exista el pedido
+            let pedido = await Pedido.findById(id);
+            if(!pedido) throw new Error('El pedido no existe');
+
+            // Solo el vendedor que creo el pedido puede borrarlo
+            if (pedido.vendedor.toString() !== ctx.usuario.id) {
+                throw new Error('No autorizado');
+            }
+
+            await Pedido.findOneAndDelete({_id: id});
+
+            return pedido;
         },
     }
 }
