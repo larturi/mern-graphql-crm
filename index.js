@@ -15,6 +15,7 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: ({req}) => {
+        
         const token = req.headers['authorization'] || '';
         if (token) {
             try {
