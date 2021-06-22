@@ -10,7 +10,7 @@ const conectarDB = async () => {
             useFindAndModify: false,
             useCreateIndex: true
         });
-        console.log('DB Conectada');
+        console.info('DB Conectada');
     } catch (error) {
         console.error('Hubo un error');
         console.error(error);

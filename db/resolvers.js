@@ -9,18 +9,16 @@ const Cliente = require('../models/Cliente');
 const Pedido = require('../models/Pedido');
 
 const crearToken = (user, secret, expiresIn) => {
-    console.log(user);
     const { id, nombre, apellido, email } = user;
-    return jwt.sign( { id }, secret, { expiresIn } );
+    return jwt.sign( { id, nombre, apellido, email }, secret, { expiresIn } );
 }
 
 // Resolvers
 const resolvers = {
     Query: {
         // Usuarios
-        obtenerUsuario: async (_, { token }) => {
-            const usuarioId = await jwt.verify(token, process.env.JWT_SECRET);
-            return usuarioId;
+        obtenerUsuario: async (_, {}, ctx) => {
+            return ctx.usuario;
         },
 
         // Productos

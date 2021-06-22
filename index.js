@@ -17,9 +17,10 @@ const server = new ApolloServer({
     context: ({req}) => {
         
         const token = req.headers['authorization'] || '';
+
         if (token) {
             try {
-                const usuario = jwt.verify(token, process.env.JWT_SECRET);
+                const usuario = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
                 return {
                     usuario
                 }
@@ -32,5 +33,5 @@ const server = new ApolloServer({
 
 // Arrancar el Servidor
 server.listen().then( ({url}) => {
- console.log(`Servidor corriendo en la URL ${url}`);
+ console.info(`Servidor corriendo en la URL ${url}`);
 });
