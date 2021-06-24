@@ -273,8 +273,10 @@ const resolvers = {
             return cliente;
         },
         eliminarCliente: async (_, {id}, ctx) => {
+
             // Verificar que exista el cliente
             let cliente = await Cliente.findById(id);
+
             if(!cliente) throw new Error('El cliente no existe');
 
             // Solo el vendedor que creo el cliente puede borrarlo
@@ -284,7 +286,7 @@ const resolvers = {
 
             await Cliente.findOneAndDelete({_id: id});
 
-            return cliente;
+            return 'Cliente eliminado';
         },
 
         // Pedidos
