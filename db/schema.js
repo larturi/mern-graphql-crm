@@ -95,7 +95,6 @@ const typeDefs = gql`
         pedido: [PedidoProductoInput]
         total: Float
         cliente: ID!
-        estado: EstadoPedido
     }
 
     enum EstadoPedido {
@@ -118,8 +117,7 @@ const typeDefs = gql`
         obtenerProducto(id: ID!): Producto
 
         # Clientes
-        obtenerClientes(eliminado: Boolean!): [Cliente]
-        obtenerClientesVendedor: [Cliente]
+        obtenerClientesVendedor(eliminado: Boolean!): [Cliente]
         obtenerCliente(id: ID!): Cliente
 
         # Pedidos
