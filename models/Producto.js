@@ -21,6 +21,10 @@ const ProductoSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    eliminado: {
+        type: Boolean,
+        default: false
+    },
 });
 
 ProductoSchema.index({ nombre: 'text' });

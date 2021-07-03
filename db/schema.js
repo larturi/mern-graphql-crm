@@ -15,6 +15,7 @@ const typeDefs = gql`
         stock: Int
         precio: Float
         creado: String
+        eliminado: Boolean
     }
 
     type Cliente {
@@ -26,6 +27,7 @@ const typeDefs = gql`
         telefono: String
         vendedor: ID
         creado: String
+        eliminado: Boolean
     }
 
     type Pedido {
@@ -70,6 +72,7 @@ const typeDefs = gql`
         nombre: String!
         stock: Int!
         precio: Float!
+        eliminado: Boolean
     }
 
     input ClienteInput  {
@@ -78,6 +81,7 @@ const typeDefs = gql`
         empresa: String!
         email: String!
         telefono: String
+        eliminado: Boolean
     }
 
     input PedidoProductoInput {
@@ -110,7 +114,7 @@ const typeDefs = gql`
         obtenerUsuario: Usuario
 
         # Productos
-        obtenerProductos: [Producto]
+        obtenerProductos(eliminado: Boolean!): [Producto]
         obtenerProducto(id: ID!): Producto
 
         # Clientes

@@ -22,9 +22,9 @@ const resolvers = {
         },
 
         // Productos
-        obtenerProductos: async () => {
+        obtenerProductos: async (_, { eliminado }) => {
             try {
-                const productos = await Producto.find({});
+                const productos = await Producto.find({eliminado: eliminado});
                 return productos;
             } catch (error) {
                 console.error(error);
@@ -226,7 +226,8 @@ const resolvers = {
             let producto = await Producto.findById(id);
             if (!producto) throw new Error('Producto no encontrado');
 
-            producto = await Producto.findByIdAndDelete(id);
+            // producto = await Producto.findByIdAndDelete(id);
+            producto = await Producto.findOneAndUpdate({ _id : id }, { eliminado: true });
             return producto;
         },
 
@@ -279,7 +280,8 @@ const resolvers = {
                 throw new Error('No autorizado');
             }
 
-            await Cliente.findOneAndDelete({_id: id});
+            // await Cliente.findOneAndDelete({_id: id});
+            await Cliente.findOneAndUpdate({_id: id}, {eliminado: true});
 
             return 'Cliente eliminado';
         },
