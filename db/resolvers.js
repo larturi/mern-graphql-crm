@@ -41,9 +41,9 @@ const resolvers = {
         },
 
         // Clientes
-        obtenerClientes: async () => {
+        obtenerClientes: async (_, { eliminado }) => {
             try {
-                const clientes = await Cliente.find({});
+                const clientes = await Cliente.find({eliminado: eliminado});
                 return clientes;
             } catch (error) {
                 console.error(error);

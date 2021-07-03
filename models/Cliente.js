@@ -36,6 +36,10 @@ const ClienteSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    eliminado: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model('Cliente', ClienteSchema);
