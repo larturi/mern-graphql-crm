@@ -27,7 +27,7 @@ const PedidoSchema = mongoose.Schema({
    creado: {
        type: Date,
        default: Date.now()
-   }
+   },
 
 });
 

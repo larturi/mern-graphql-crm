@@ -112,6 +112,7 @@ const resolvers = {
 
         // Busquedas Avanzadas
         mejoresClientes: async () => {
+
             const clientes = await Pedido.aggregate([
                 { $match: { estado: 'COMPLETADO' } },
                 { $group: {
@@ -125,9 +126,6 @@ const resolvers = {
                         foreignField: '_id',
                         as: 'cliente'
                     }
-                },
-                {
-                    $limit: 3
                 },
                 {
                     $sort: { total: -1 }
@@ -150,9 +148,6 @@ const resolvers = {
                         foreignField: '_id',
                         as: 'vendedor'
                     }
-                },
-                {
-                    $limit: 3
                 },
                 {
                     $sort: { total: -1 }
