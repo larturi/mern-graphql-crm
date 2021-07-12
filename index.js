@@ -12,26 +12,31 @@ conectarDB();
 
 // Servidor
 const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({req}) => {
-        
-        const token = req.headers['authorization'] || '';
+   typeDefs,
+   resolvers,
+   playground: false,
+   introspection: false,
 
-        if (token) {
-            try {
-                const usuario = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
-                return {
-                    usuario
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }
-    }
+   context: ({ req }) => {
+      const token = req.headers['authorization'] || '';
+
+      if (token) {
+         try {
+            const usuario = jwt.verify(
+               token.replace('Bearer ', ''),
+               process.env.JWT_SECRET
+            );
+            return {
+               usuario,
+            };
+         } catch (error) {
+            console.error(error);
+         }
+      }
+   },
 });
 
 // Arrancar el Servidor
-server.listen({ port: process.env.PORT}).then( ({url}) => {
- console.info(`Servidor corriendo en la URL ${url}`);
+server.listen({ port: process.env.PORT }).then(({ url }) => {
+   console.info(`Servidor corriendo en la URL ${url}`);
 });
