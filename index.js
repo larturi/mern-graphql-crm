@@ -14,6 +14,8 @@ conectarDB();
 const server = new ApolloServer({
    typeDefs,
    resolvers,
+
+   // Desactivar Playground
    playground: false,
    introspection: false,
 
