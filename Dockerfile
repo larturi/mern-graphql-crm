@@ -9,8 +9,10 @@ RUN npm install
 COPY . .
 
 ENV PORT=4005
-ENV DB_MONGO=mongodb://entriesdb:27017/crm-graphql
 ENV JWT_SECRET=asdf1234zxcv
+
+ARG DB_MONGO
+ENV DB_MONGO=${DB_MONGO}
 
 EXPOSE 4005
 
